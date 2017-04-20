@@ -1,0 +1,11 @@
+{
+  "name": "commitsToPullRequests",
+  "version": "1.0.0",
+  "description": "breakdowns commits into Pull Requests",
+  "main": "index.js",
+  "author": "PG Herveou",
+  "license": "MIT",
+  "dependencies": {
+    "nodegit": "^0.18.0"
+  }
+}
