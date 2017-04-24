@@ -1,0 +1,11 @@
+// @flow
+
+declare type User = {
+  login: string
+}
+
+declare type Commit = {
+  id: string,
+  message: string,
+  diff: '+' | '-'
+}

@@ -1,17 +1,57 @@
 {
   "name": "prify",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Breakdown commits into individual Pull Requests",
   "author": "PG Herveou",
   "license": "MIT",
   "bin": {
     "prify": "bin/index.js"
   },
-  "engines": {
-    "node": ">=v7.9.0"
+  "scripts": {
+    "lint": "xo"
   },
   "dependencies": {
+    "babel-register": "^6.24.1",
     "git-remote-origin-url": "^2.0.0",
     "superagent": "^3.5.2"
+  },
+  "devDependencies": {
+    "babel-eslint": "^7.2.3",
+    "babel-preset-env": "^1.4.0",
+    "babel-preset-flow": "^6.23.0",
+    "eslint-plugin-flowtype": "^2.32.1",
+    "xo": "^0.18.1"
+  },
+  "babel": {
+    "presets": [
+      "flow",
+      [
+        "env",
+        {
+          "targets": {
+            "node": "current"
+          }
+        }
+      ]
+    ]
+  },
+  "xo": {
+    "ignores": [
+      "flow-typed/**"
+    ],
+    "envs": [
+      "node"
+    ],
+    "plugins": [
+      "flowtype"
+    ],
+    "parser": "babel-eslint",
+    "space": true,
+    "semicolon": false,
+    "rules": {
+      "flowtype/define-flow-type": 2,
+      "operator-linebreak": 0,
+      "object-curly-spacing": 0
+    }
   }
 }

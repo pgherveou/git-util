@@ -10,7 +10,6 @@ npm install -g prify
 
 ## Prerequisites
 
-- node version >=v7.9.0
 - A gitub token with repo perimissions stored into `GITHUB_TOKEN` environment variable
 
 ## Usage
