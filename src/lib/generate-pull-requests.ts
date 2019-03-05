@@ -1,12 +1,10 @@
-//  @flow
-
-const { exec } = require('child_process')
-const gitRemoteOriginUrl = require('git-remote-origin-url')
-const git = require('./git')
-const github = require('./github-agent')
+import { exec } from 'child_process'
+import gitRemoteOriginUrl from 'git-remote-origin-url'
+import { gitCommands as git } from './git'
+import { githubAgent as github } from './github-agent'
 
 // Open a URL in the browser
-const open = (url: string) => exec(`open ${url}`)
+const openInBrowser = (url: string) => exec(`open ${url}`)
 
 /*!
  * Start script
@@ -15,34 +13,41 @@ const open = (url: string) => exec(`open ${url}`)
 async function start() {
   const srcBranchName = git.getCurrentBranch()
 
-  const repo = await gitRemoteOriginUrl().then(url =>
+  const repo = await gitRemoteOriginUrl().then((url: string) =>
     url.replace('.git', '').replace('git@github.com:', '')
   )
+  console.debug({ repo })
 
   // Get list of commits from current branch where we want to create an associated branch
   const commits = git
     .getCommits('master', srcBranchName)
     .filter(commit => !commit.message.startsWith('fixup!'))
+  console.debug({ commits })
 
   // Get Github user
-  const user: User = await github.getUser()
+  const user = await github.getUser()
+  console.debug({ user })
 
   // Setup feature branch
   const featureBranchName = `feature-${srcBranchName}`
   git.checkout('master')
   git.checkoutBranch(featureBranchName)
   git.push(featureBranchName)
+  console.debug({ featureBranchName })
 
   // Iterate over commits
-  /* eslint-disable no-await-in-loop */
   for (const [index, commit] of commits.entries()) {
     // Setup branch for commit
-    const commitBranchName = `${featureBranchName}-${index + 1}-of-${commits.length}`
+    const commitBranchName = `${featureBranchName}-${index + 1}-of-${
+      commits.length
+    }`
     git.checkoutBranch(commitBranchName)
+    console.debug({ commitBranchName })
 
     const commitsToCherryPick = git
       .getCommits(commitBranchName, srcBranchName)
       .filter(c => c.message.includes(commit.message) && c.diff === '+')
+    console.debug({ commitsToCherryPick })
 
     // Cherry pick commit into commit branch if necessary
     for (const commit of commitsToCherryPick) {
@@ -53,13 +58,18 @@ async function start() {
     git.push(commitBranchName)
 
     // Open pull request
-    const pullRequestURL = await github.getPullRequestURL(
-      user,
-      repo,
-      featureBranchName,
-      commitBranchName
-    )
-    open(pullRequestURL)
+    try {
+      const pullRequestURL = await github.getPullRequestURL(
+        user,
+        repo,
+        featureBranchName,
+        commitBranchName
+      )
+      console.debug(pullRequestURL)
+      openInBrowser(pullRequestURL)
+    } catch (err) {
+      console.warn('Failed to create Github PR')
+    }
 
     // Checkout feature branch
     git.checkout(featureBranchName)
@@ -68,4 +78,11 @@ async function start() {
   git.checkout(srcBranchName)
 }
 
-start()
+// execute the script
+;(async () => {
+  try {
+    await start()
+  } catch (err) {
+    console.error(err)
+  }
+})()

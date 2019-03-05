@@ -1,0 +1,17 @@
+{
+  "defaultSeverity": "warning",
+  "extends": ["tslint:latest", "tslint-config-prettier"],
+  "rules": {
+    "no-empty": false,
+    "no-reference": false,
+    "no-implicit-dependencies": [true, "dev"],
+    "interface-name": false,
+    "no-bitwise": false,
+    "interface-over-type-literal": false,
+    "no-submodule-imports": false,
+    "object-literal-sort-keys": false,
+    "no-shadowed-variable": false,
+    "no-console": false
+  },
+  "rulesDirectory": []
+}

@@ -1,6 +1,4 @@
-// @flow
-
-const request = require('superagent')
+import request from 'superagent'
 
 function get(path: string) {
   let req = request.get(`https://api.github.com${path}`)
@@ -14,19 +12,23 @@ function get(path: string) {
     )
   }
 
-  return req.then(res => res.body)
+  return req.then((res: { body: any }) => res.body)
 }
 
-module.exports = {
-  async getUser(): Promise<User> {
+type GithubUser = {
+  login: string
+}
+
+export const githubAgent = {
+  async getUser(): Promise<GithubUser> {
     return get('/user')
   },
   async getPullRequestURL(
-    user: User,
+    user: { login: string },
     repo: string,
     base: string,
     head: string
-  ): Promise<string> {
+  ) {
     const pullrequests = await get(
       `/repos/${repo}/pulls?head=${user.login}:${head}`
     )
