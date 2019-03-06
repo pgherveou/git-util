@@ -26,7 +26,7 @@ async function start() {
 
   // Get Github user
   const user = await github.getUser()
-  console.debug({ user })
+  console.debug({ user: user.login })
 
   // Setup feature branch
   const featureBranchName = `feature-${srcBranchName}`

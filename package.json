@@ -5,7 +5,8 @@
   "author": "PG Herveou",
   "license": "MIT",
   "bin": {
-    "generate-pull-requests": "bin/generate-pull-requests.js"
+    "generate-pull-requests": "bin/generate-pull-requests.js",
+    "fixup-staged-files": "bin/fixup-staged-files.js"
   },
   "scripts": {
     "precommit": "pretty-quick --staged",

@@ -43,10 +43,42 @@ export const gitCommands = {
         return { id, message, diff } as Commit
       })
   },
+  getSha(file: string): string {
+    return git(`log -n 1 --pretty=format:%H -- "${file}"`)
+  },
+  getShas(fromSha: string): Array<string> {
+    return git(`rev-list ${fromSha}..HEAD`).split('\n')
+  },
+  getStagedFilesBySha(): { [key: string]: Array<string> } {
+    return git('diff --cached --name-status')
+      .split('\n')
+      .map(diff => {
+        const [, ...files] = diff.split('\t')
+        const sha = this.getSha(files[0])
+        return { files, sha }
+      })
+      .filter(info => info.sha)
+      .reduce((map, { files, sha }) => {
+        map[sha] = [...(map[sha] || []), ...files]
+        return map
+      }, {})
+  },
+  mergeBase(branch1: string, branch2: string): string {
+    return git(`merge-base ${branch1} ${branch2}`)
+  },
 
   // Write commands
   cherryPick(args: string) {
     return git(`cherry-pick ${args}`)
+  },
+  add(file: string) {
+    return git(`add ${file}`)
+  },
+  fixup(sha: string) {
+    return git(`commit --fixup ${sha}`)
+  },
+  resetToHead() {
+    git('reset HEAD .')
   },
   push(name: string) {
     return spawnSync('git', ['push', '--set-upstream', 'origin', name], {
